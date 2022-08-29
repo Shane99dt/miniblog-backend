@@ -4,6 +4,7 @@ const port = 5000
 const morgan = require('morgan')
 const cors = require('cors')
 const categoriesRoutes = require('./routes/categories')
+const articlesRoutes = require('./routes/articles')
 
 app.use(cors())
 app.use(morgan('tiny'))
@@ -15,3 +16,4 @@ app.listen(port, (req, res) =>{
 })
 
 app.use(('/categories'), categoriesRoutes)
+app.use(('/articles'), articlesRoutes)
