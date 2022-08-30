@@ -1,7 +1,6 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-// const { categoryExists } = require('../middlewares/categoriesMW')
 const { articleExists, articleNotExist, categoryExists } = require('../middlewares/articlesMW')
 const slugify = require('slugify')
 const { body, validationResult } = require('express-validator')
