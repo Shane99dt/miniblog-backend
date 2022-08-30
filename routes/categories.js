@@ -1,10 +1,9 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-const { categoryExists } = require('../middlewares/categoriesMW')
 const slugify = require('slugify')
-const categoriesTable = require('../categories.json')
 const { body, validationResult } = require('express-validator')
+const { categoryNotExist } = require('../middlewares/categoriesMW')
 
 
 
@@ -26,15 +25,10 @@ const missingName = 'Category name is missing'
 const missingDescription = 'Category description is missing'
 const descLengthMin = 'Description is not long enough'
 const descLengthMax = 'Description is too long'
-const categoryNameExists = 'Category name already exists'
 
 app.post('/',
-  body('name').exists().withMessage(missingName).custom(value => {
-    const slugified = slugify(value, { lower: true })
-    const categoryExists = categoriesTable.find(category => category.slug === slugified)
-    return !categoryExists
-  }).withMessage(categoryNameExists),
-  body('description').exists().withMessage(missingDescription).isLength({min: 20}).withMessage(descLengthMin).isLength({max: 350}).withMessage(descLengthMax),
+  body('name').isLength({min: 1}).withMessage(missingName),
+  body('description').exists().withMessage(missingDescription).isLength({min: 20}).withMessage(descLengthMin).isLength({max: 350}).withMessage(descLengthMax), categoryNotExist,
   (req, res) => {
 
   const { errors } = validationResult(req)
@@ -61,7 +55,7 @@ app.post('/',
       })
     })
   }
-  res.json('Category added successfully')
+  res.status(201).json('Category added successfully')
 })
 
 

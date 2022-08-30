@@ -1,10 +1,9 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-const { categoryExists } = require('../middlewares/categoriesMW')
-const { articleExists } = require('../middlewares/articlesMW')
+// const { categoryExists } = require('../middlewares/categoriesMW')
+const { articleExists, articleNotExist, categoryExists } = require('../middlewares/articlesMW')
 const slugify = require('slugify')
-const articlesTable = require('../articles.json')
 const { body, validationResult } = require('express-validator')
 const moment = require('moment')
 
@@ -21,6 +20,11 @@ app.get('/', (req, res) => {
   })
 })
 
+// view one article
+app.get('/categories/:slug/:slugArticle', categoryExists, articleExists, (req, res) => {
+  res.status(201).json(req.article)
+})
+
 // view articles according to the category
 app.get('/categories/:slug', categoryExists, (req, res) => {
   fs.readFile('./articles.json', (err, data) => {
@@ -31,7 +35,7 @@ app.get('/categories/:slug', categoryExists, (req, res) => {
     const stringified =  data.toString()
     const dataJsoned = JSON.parse(stringified)
     const articles = dataJsoned.filter(art => art.category === req.params.slug)
-    res.status(201).json(articles)
+    res.status(201).json({articles, category: req.category})
   })
 })
 
@@ -40,17 +44,12 @@ app.get('/categories/:slug', categoryExists, (req, res) => {
 const authorName = "Name is not long enough"
 const missingTitle = 'Article title is missing'
 const descLengthMin = 'Description is not long enough'
-const articleNameExists = 'Article name already exists'
 
 app.post('/categories/:slug',
   body("author").isLength({ min : 2 }).withMessage(authorName),
-  body('title').exists().withMessage(missingTitle).custom(value => {
-    const slugified = slugify(value, { lower: true })
-    const articleExists = articlesTable.find(art => art.slug === slugified)
-    return !articleExists
-  }).withMessage(articleNameExists),
+  body('title').isLength({ min : 1 }).withMessage(missingTitle),
   body('description').isLength({min: 50}).withMessage(descLengthMin),
-    categoryExists,
+    categoryExists, articleNotExist,
   (req, res) => {
 
   const { errors } = validationResult(req)
@@ -79,7 +78,7 @@ app.post('/categories/:slug',
       })
     })
   }
-  res.json('Article added successfully')
+  res.status(201).json('Article added successfully')
 })
 
 
@@ -101,6 +100,16 @@ app.delete('/categories/:slug/:slugArticle', categoryExists, articleExists, (req
   res.status(201).json(`The article "${req.article.title}" has been successfully deleted`)
 })
 
+
+// creer une article
+// supprimer une article
+// view all articles
+// view articles according to the category
+
+// modifier une article - Reste
+
+// creer une categorie
+// view categories
 
 
 

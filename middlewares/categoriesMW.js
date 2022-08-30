@@ -1,15 +1,24 @@
-const categoriesTable = require('../categories.json')
+const { default: slugify } = require('slugify')
+const fs = require('fs')
 
-const categoryExists = (req, res, next) => {
-  const category = categoriesTable.find(category => category.slug === req.params.slug)
 
-  if(category){
-    req.category = category
-    next()
-  }else{
-    res.status(404).json("Category doesn't exists")
-  }
+const categoryNotExist = (req, res, next) => {
+
+  fs.readFile('./categories.json', (err, data) => {
+    if(err){
+      res.status(500).json('Internal server error')
+      return
+    }
+    const slugified = slugify(req.body.name, {lower: true})
+    const dataJsoned = JSON.parse(data.toString())
+    const category = dataJsoned.find(cat => cat.slug === slugified)
+
+    if(!category){
+      next()
+    }else{
+      res.status(409).json("Article already exists")
+    }
+  })
 }
 
-
-module.exports = { categoryExists }
+module.exports = { categoryNotExist }

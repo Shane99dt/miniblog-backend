@@ -8,12 +8,11 @@ const articlesRoutes = require('./routes/articles')
 
 app.use(cors())
 app.use(morgan('tiny'))
-
 app.use(express.json())
+
+app.use('/categories', categoriesRoutes)
+app.use('/articles', articlesRoutes)
 
 app.listen(port, (req, res) =>{
   console.log(`running on port ${port}`)
 })
-
-app.use(('/categories'), categoriesRoutes)
-app.use(('/articles'), articlesRoutes)
