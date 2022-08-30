@@ -31,10 +31,17 @@ const articleNotExist = (req, res, next) => {
       return
     }
 
+    // sending the error as an object inside a table
     if(!req.body.title){
-      res.status(400).json('title doesnt exists')
+      res.status(400).json([{"msg": 'Title doesn\'t exists', "param":"title"}])
       return
     }
+
+    // normal way
+    // if(!req.body.title){
+    //   res.status(400).json('title doesn\'t exists')
+    //   return
+    // }
 
     const slugified = slugify(req.body.title, {lower: true})
     const dataJsoned = JSON.parse(data.toString())
@@ -43,7 +50,7 @@ const articleNotExist = (req, res, next) => {
     if(!article){
       next()
     }else{
-      res.status(409).json("Article already exists")
+      res.status(409).json([{"msg": 'Article already exists', "param":"title"}])
     }
   })
 }
@@ -62,7 +69,7 @@ const categoryExists = (req, res, next) => {
       req.category = category
       next()
     }else{
-      res.status(404).json("Category doesn't exists")
+      res.status(404).json([{"msg": 'Category doesn\'t exists', "param":"category"}])
     }
   })
 }

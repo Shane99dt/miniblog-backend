@@ -9,6 +9,12 @@ const categoryNotExist = (req, res, next) => {
       res.status(500).json('Internal server error')
       return
     }
+    if(!req.body.name){
+      res.status(400).json([{"msg": 'Add a name', "param":"name"}])
+      return
+    }
+
+
     const slugified = slugify(req.body.name, {lower: true})
     const dataJsoned = JSON.parse(data.toString())
     const category = dataJsoned.find(cat => cat.slug === slugified)
@@ -16,7 +22,7 @@ const categoryNotExist = (req, res, next) => {
     if(!category){
       next()
     }else{
-      res.status(409).json("Article already exists")
+      res.status(409).json([{"msg": 'Category already exists', "param":"name"}])
     }
   })
 }
