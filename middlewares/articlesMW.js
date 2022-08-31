@@ -37,12 +37,6 @@ const articleNotExist = (req, res, next) => {
       return
     }
 
-    // normal way
-    // if(!req.body.title){
-    //   res.status(400).json('title doesn\'t exists')
-    //   return
-    // }
-
     const slugified = slugify(req.body.title, {lower: true})
     const dataJsoned = JSON.parse(data.toString())
     const article = dataJsoned.find(art => art.slug === slugified)
@@ -50,7 +44,7 @@ const articleNotExist = (req, res, next) => {
     if(!article){
       next()
     }else{
-      res.status(409).json([{"msg": 'Article already exists', "param":"title"}])
+      res.status(409).json([{"msg": 'Article title already exists', "param":"title"}])
     }
   })
 }
