@@ -18,7 +18,7 @@ const articleExists = (req, res, next) => {
       req.articleIndex = articleIndex
       next()
     }else{
-      res.status(404).json("Article doesn't exists")
+      res.status(404).json([{"msg": 'Article doesn\'t exists', "param":"global"}])
     }
   })
 }
